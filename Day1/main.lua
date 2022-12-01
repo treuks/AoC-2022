@@ -36,7 +36,4 @@ for key, value in pairs(xd3) do
     Xddd = split(value, " ")
     table.insert(integertable, add(Xddd))
 end
-print(math.max(
-    -- unpack is deprecated but i honestly don't give a fuck looooooooool
-    unpack(integertable)
-))
+print(math.max(table.unpack(integertable)))
