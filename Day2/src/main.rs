@@ -5,54 +5,63 @@ pub enum Tools {
     Paper,
     Scissors,
 }
+pub enum GameEnum {
+    NeedsWin,
+    NeedsDraw,
+    NeedsLose,        
+}
 #[derive(Debug)]
 struct RPS {
     score: u64,
 }
-/*
-    1 Point  - Rock
-    2 Points - Paper
-    3 Points - Scissors
-*/
+
 impl RPS {
 
-    fn play_turn(&mut self, first_tool: Tools, second_tool: Tools) {
-        match (second_tool, first_tool) {
-            (self::Tools::Rock, self::Tools::Rock) => {
-                self.score += 1;
-                self.score += 3; // Draw grants 3 points
-            },
-            (self::Tools::Rock, self::Tools::Paper) => {
-                self.score += 1;
-            },
-            (self::Tools::Rock, self::Tools::Scissors) => {
-                self.score += 1;
-                self.score += 6; // Win grants 6 points
-            },
-            (self::Tools::Paper, self::Tools::Rock) => {
-                self.score += 2;
-                self.score += 6; // Win grants 6 points
-            }
-            (self::Tools::Paper, self::Tools::Paper) => {
-                self.score += 2;
-                self.score += 3; // Draw grants 3 points
-            }
-            (self::Tools::Paper, self::Tools::Scissors) => {
-                self.score += 2;
-            }
-            (self::Tools::Scissors, self::Tools::Rock) => {
-                self.score += 3;
-            }
-            (self::Tools::Scissors, self::Tools::Paper) => {
-                self.score += 3;
+    fn play_turn(&mut self, tool: Tools, endgoal: GameEnum) {
+        match endgoal {
+
+            self::GameEnum::NeedsWin => {
                 self.score += 6;
+                match tool {
+                    self::Tools::Paper => {
+                        self.score += 3; // Scissors beat the paper, therefore you get 3 points
+                    }
+                    self::Tools::Rock => {
+                        self.score += 2; // Paper beats rock, therefore you get 2 points
+                    }
+                    self::Tools::Scissors => {
+                        self.score += 1; // Rock beats scissors, therefore you get 1 point
+                    }
+                }
             }
-            (self::Tools::Scissors, self::Tools::Scissors) => {
+            self::GameEnum::NeedsDraw => {
                 self.score += 3;
-                self.score += 3; // Draw grants 3 points
+                match tool {
+                    self::Tools::Scissors => {
+                        self.score += 3; 
+                    }
+                    self::Tools::Paper => {
+                        self.score += 2;
+                    }
+                    self::Tools::Rock => {
+                        self.score += 1; 
+                    }
+                }
+            }
+            self::GameEnum::NeedsLose => {
+                match tool {
+                    self::Tools::Rock => {
+                        self.score += 3; 
+                    }
+                    self::Tools::Scissors => {
+                        self.score += 2; 
+                    }
+                    self::Tools::Paper => {
+                        self.score += 1;
+                    }
+                }
             }
         }
-        println!("Score: {}", self.score);
 
     }
     fn get_score(&self) -> &u64 {
@@ -83,13 +92,13 @@ fn main() {
         };
         let right_hand = match linexd.1 {
             "X" => {
-                Tools::Rock
+                GameEnum::NeedsLose
             }
             "Y" => {
-                Tools::Paper
+                GameEnum::NeedsDraw
             }
             "Z" => {
-                Tools::Scissors
+                GameEnum::NeedsWin
             }
             _ => {
                 panic!("Right hand's fucked")
